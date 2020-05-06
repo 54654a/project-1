@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reimbursement Request </title>
+    <h1>Reimbursement Request</h1>
+    <hr>
+</head>
+<body onload="loadInfo()">
+   <div id="divL">
+    <label for="employee First name" >First Name: </label> 
+    <input id="fName" type="text">
+
+    <label for="employee idname" >Last Name: </label> 
+    <input id="lName" type="text"><br><br>
+
+    <label for="employee Id: " >Employee ID: </label> 
+    <input id="eId" type="text"><br><br>
+
+    <label for=""></label>
+
+    <label for="location">Location: </label>
+    <input id= "location" type="text">
+
+    <label for="date">Date and Time : </label> 
+    <input id="date" type="date">
+    <input id="time" type="time"><br>
+
+    <p>Description: </p>
+    <textarea id="des" name="" id="" cols="75" rows="10"></textarea><br>
+    <br>
+    <label for="cost">Cost: </label>
+    <input id="cost" type="number"><br><br>
+    
+    <label for="format">Grading Format: </label>
+    <input id="check1" type="radio" name="format" value="Grade"> Grades
+    <input id="check2" type="radio" name="format"  value="Presentation"> Presentation 
+    <input id="check3" type="radio" name="format"  value="Others"> Unknown <br><br>
+    <label for="events">Type of Event</label>
+    <select id="eventId">
+        <option value="1">University courses</option>
+        <option value="2">Seminars</option>
+        <option value="3">Certification preparation classes</option>
+        <option value="4">Cerification</option>
+        <option value="5">Technical trainig</option>
+        <option value="6">Others</option>
+    </select>
+    <br>
+    <p>Work related justification: </p>
+    <textarea name="" id="des2" cols="75" rows="10"></textarea><br>
+    <button  onclick="requestForm();">Submit</button> 
+    <button onclick="resetForm();">Clear Form</button>
+   </div>
+
+   <div id ="divC">
+       <ul>
+        <li>
+            <a onclick ="subGrade()" href="submitResult.html">Submit Grade</a>
+        </li>
+
+        <li>
+            <a onclick ="backtoMain()" href="index.html">Back to Home</a>
+        </li>
+        <li>
+            <a href="index.html">Log out</a>
+        </li>
+       </ul>
+   </div>
+   <div id="divR">
+
+    <p>All Employees must complete the Tuition Reimbursement form one 
+        week prior to thestart of the event.  This form must 
+        collect (required): basic employee information; date, 
+        time, location, description, cost, grading format, and 
+        type of event; work-related justification.  The employee 
+        can optionally include: event-related attachments of 
+        pdf, png, jpeg, txt, or doc file type, attachments of 
+        approvals already provided of .msg (Outlook Email File)
+         file type and type of approval, work time that will be 
+         missed. </p>
+   </div>
+
+</body>
+<script>
+    var employee =JSON.parse(sessionStorage.getItem("e1"));
+    console.log(employee)
+    function loadInfo(){
+	    console.log("inside load info");
+        document.getElementById("fName").value= employee.fName;
+        document.getElementById("lName").value=employee.lName;
+        document.getElementById("eId").value=employee.id;   
+    }
+
+function resetForm(){
+    document.getElementById("fName").value= employee.fName;
+    document.getElementById("lName").value=employee.lName;
+    document.getElementById("eId").value=employee.id;
+    document.getElementById("location").value="";
+    document.getElementById("time").value="";
+    document.getElementById("des").value="";
+    document.getElementById("cost").value="";
+    document.getElementById("check1").checked=false;
+    document.getElementById("check2").checked=false;
+    document.getElementById("check3").checked=false;
+    document.getElementById("eventId").value=1;
+    document.getElementById("des2").value="";
+}
+
+function requestForm(){
+
+
+    let checkRadio = document.querySelector( 
+        'input[name="format"]:checked'); 
+
+    let id = document.getElementById("eId").value;
+    let eid = document.getElementById("eventId").value;
+    let gf =checkRadio.value;
+    let loc = document.getElementById("location").value;
+    var futureDate = document.getElementById("date");
+    let dt = document.getElementById("date").value;
+   // request.datetime += document.getElementById("time").value;  
+    let desc= document.getElementById("des").value;
+    let just= document.getElementById("des2").value;
+    let cost = document.getElementById("cost").value;
+    let currentDate = new Date();
+    let timeDiff = Math.abs(futureDate.valueAsNumber-currentDate.getTime());
+    let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    let urgent;
+    if(diffDays < 14){
+        urgent =1;
+    }else{
+        urgent= 0;
+    }
+    
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange =function(){
+        if(this.readyState ==4 && this.status == 200){
+            console.log(this.responseText);
+        }
+    }
+    
+    
+    //url = "http://localhost:8080/TRMS/addRequest.do?employeeID=" +request.employeeId+
+    //"eventId="+request.eventId+"urgent="+request.urgent+"gradeFormat="+request.gradeFormat+
+    //"location="+request.location+"datetime="+request.datetime+"description="+
+    //request.description+"justification="+request.justification+"cost="+request.cost;
+
+    url = "http://localhost:8080/TRMS/addRequest.do";
+
+    xhttp.open("POST",url,true);
+
+    xhttp.setRequestHeader('Context-Type','application/json');
+
+    let request={
+        employeeId: employee.id,
+        eventId: eid,
+        urgent: urgent,
+        gradeFormat: gf,
+        location: loc,
+        datetime: dt,
+        description: desc,
+        justification: just,
+        cost: cost
+    };
+    console.log("this is request: " +request.employeeId);
+
+    xhttp.send(JSON.stringify(request));
+
+    alert("Form has been submitted");
+    resetForm();
+}
+
+
+</script>
+</html>

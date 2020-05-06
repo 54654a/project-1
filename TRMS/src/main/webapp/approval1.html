@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Final Approval Page</title>
+</head>
+<body>
+<label for="">Employee grade is: 80</label><br>
+<label for="">Are you satisfied with that grade (YES/NO)</label>
+<input id="answer" type="text">
+<button onclick ="updateRei()">submit</button><br>
+<img src="Grade_letters.png" width="400px" height="500px">
+</body>
+<script>
+var reimbur =JSON.parse(sessionStorage.getItem("rei"));
+
+
+function updateRei(){
+    var answer = document.getElementById("answer").value;
+    var id = reimbur.resimId;
+    var result;
+    let temp =answer.toLowerCase();
+    if(temp== "yes"){
+        result ="Approved";
+        updateEmployeeBalance()
+    }else{
+        result = "Denied";
+    }
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState==4 && this.status==200){
+            console.log(this.responseText);
+        }
+    }
+    let url="http://localhost:8080/TRMS/updateReimbursement.do";
+    xhttp.open("POST",url,true);
+    xhttp.setRequestHeader('Context-Type','application/json');
+
+    let updateR = {
+        resimId: id,
+        requestState: result
+    };
+    xhttp.send(JSON.stringify(updateR));  
+    alert("It has been updated.")
+    alert("This window will be closed.");
+    window.open("result.html",'popup','width=980, height=600, scrollbars=no,resizable=no',false);
+    //window.close();
+}
+
+function updateEmployeeBalance(){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState==4&& this.status ==200){
+            console.log(this.responseText);
+        }
+    }
+
+    let url ="http://localhost:8080/TRMS/updateEmployeeBalance.do";
+    xhttp.open("POST",url,true);
+    xhttp.setRequestHeader('Context-Type','application/json');
+    let newAwarded = reimbur.awardedAmount + reimbur.pendingAmount;
+    let total =reimbur.totalAmount;
+    let avail = total - newAwarded;
+    if(avail < 0){
+        availd = 0;
+    }
+    let balanceInfo= {
+        employeeId: reimbur.employeeId,
+        totalAmount: total,
+        awardedAmount: newAwarded,
+        availAmount: avail
+    };
+    xhttp.send(JSON.stringify(balanceInfo));
+}
+
+
+
+</script>
+</html>

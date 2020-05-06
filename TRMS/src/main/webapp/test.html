@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p = id="p" onclick="test()">Click the button to open an about:blank page in a new browser window that is 200px wide and 100px tall.</p>
+<input id="date" type="date">
+<input id="time" type="time"><br>
+<button onclick="myFunction()">Try it</button>
+
+<script>
+function myFunction() {
+
+  confirm("Cost has exceeded the available amount.\n"  +
+        "Do you want to override that?");
+    
+    document.getElementById("p").innerHTML=`<button>test</button>`;
+     var datetime = document.getElementById("date").value;
+    var time = document.getElementById("time").value;
+    console.log(datetime);
+    console.log(time);
+}
+function test(){
+    document.getElementById("p").innerHTML="abc";
+}
+</script>
+
+</body>
+</html>

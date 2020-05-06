@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Request Approval Page</title>
+    <script type="text/javascript" src="appForm.js">
+
+    </script> 
+</head>
+<body id="appBody" onload="loadingInfo()">
+    <div id="userInfo">
+        <label >Employee ID: </label>
+        <label id="userId"></label> <br>
+        <label >Employee Name: </label>
+        <label id ="userName"></label> 
+        <a href="index.html"> Log Out</a>  
+    </div>
+    <div id="buttons">
+        <button onclick="checkRequest()">Check request</button>
+        <button onclick="refresh()">Refresh</button><br>
+    </div>
+    <p id="result">  </p>
+    <p id="approvalResult"></p>
+</body>
+
+</html>

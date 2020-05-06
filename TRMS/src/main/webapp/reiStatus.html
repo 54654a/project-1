@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Final Grade/Presetation</title>
+<h1>Final Grade/Presetation</h1>
+</head>
+<body id="bodyt">
+    <div id="userInfo">
+        <label >Employee ID: </label>
+        <label id="userId"></label> <br>
+        <label >Employee Name: </label>
+        <label id ="userName"></label> <br>
+        <button onclick="">Check Request Status</button>    
+        <button onclick="">Check Reimburment Status</button>
+    </div>
+<ol id="info"></ol>
+
+</body>
+<script>
+    var employee =JSON.parse(sessionStorage.getItem("e1"));
+    var request={};
+    var reiResult={};
+    var info2;
+    var fullName= employee.fName + " " + employee.lName;
+    document.getElementById("username").value = fullName;
+    document.getElementById("userId").value = employee.id;
+
+
+    let xhttp =new XMLHttpRequest();
+    xhttp.onreadystatechange =function(){
+        if(this.readyState ==4 && this.status==200){
+            console.log(this.responseText);
+            reiResult = JSON.parse(this.responseText);
+            
+          let info=`  <li>Id:</li>
+                <li>Event ID:</li>
+                <li>Employee ID:</li>
+                <li>Total:</li>
+                <li>Pending:</li>
+                <li>Awarded:</li>
+                <li>Grade Format</li>
+                <li>Request State:</li>`;
+            for(let i = 0;i< reiResult.length;i++){
+                let format= getRequest(reiResult[i].resimId);
+                 info2 +=`<ol id="info">
+                <li>${reiResult[i].resimId}</li>
+                <li>${reiResult[i].eventId}</li>
+                <li>${reiResult[i].employeeId}</li>
+                <li>${reiResult[i].total}</li>
+                <li>${reiResult[i].pendingAmount}</li>
+                <li>${reiResult[i].awardedAmount}</li>
+                <li>${format}</li>
+                <li>${reiResult[i].requestState}</li>
+                </ol>  `;
+            }
+
+            document.getElementById("bodyt").innerHTML=info;
+        }
+    }
+    xhttp.open("GET","http://localhost:8080/TRMS/getEmployeeReimbursement.do?employee.id="+employee.id,true);
+    xhttp.send();
+
+function getRequest(id){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState ==4 && this.status ==200){
+            console.log(this.responseText);
+            request = JSON.parse(this.responseText);
+        }        
+    }   
+    xhttp.open("GET","http://localhost:8080/TRMS/getRequest.do?requestId="+id,true);
+    xhttp.send();
+    return request.gradeFormat;
+}
+</script>
+</html>

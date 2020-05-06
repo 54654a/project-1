@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+    <Properties>
+        <Property name="basePath">../TRMS/src/main/resources</Property>
+    </Properties>
+    <Appenders>
+        <!-- File Appender -->
+        <!-- make sure change file path each time when copy/paste -->
+        <File name="FILE" fileName="${basePath}/Javalogfile.log" append="true">
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.jcg" level="debug" />
+        <Root level="info">
+            <AppenderRef ref="FILE" />
+        </Root>
+    </Loggers>
+</Configuration>

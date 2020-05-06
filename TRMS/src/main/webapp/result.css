@@ -1,0 +1,19 @@
+
+
+
+body{
+    background-color: lightsalmon;
+}
+
+#rtable{
+	border: 4px solid black;
+}
+
+#rtable th{
+	border: 4px double  white;
+	text-align: center;
+}
+#rtable td{
+	border: 2px solid black;
+	text-align: center;
+}

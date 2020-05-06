@@ -1,0 +1,62 @@
+
+
+body{
+    background-color: lightsalmon;
+}
+
+ol{
+    list-style: none;
+    padding-left: 0%;
+    position: fixed;
+    padding-top: 10%;
+    
+}
+/* #id{
+    list-style: none;
+    float: left;
+} */
+#msgBar{
+    top: 10%;
+    position: fixed;
+}
+#regDiv{
+    border: 3px solid darkblue;
+    position: fixed;
+    margin-left: 80%;
+    background-color:silver;
+    top:10%;
+}
+
+#bodyDiv{
+    margin-top: 10%;
+    border: 3px solid;
+}
+
+#divS{
+    float: right;
+    border: 2px solid skyblue;
+    top: 10%;
+
+}
+
+/*this is for form.html*/
+#divL{
+    float: left;
+    border: 2px solid black;
+}
+
+#divC{
+    float: left;
+}
+ul{
+    list-style: none;
+
+}
+
+ul li{
+    margin-bottom: 20px;
+}
+
+#rtable{
+    border: 10px solid black;
+}

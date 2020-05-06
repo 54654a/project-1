@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="result.css">
+<title>Reimbursement List</title>
+<h1>Reimbursement List</h1>
+<hr>
+</head>
+<body>
+<button id="btnRefresh" onclick="refresh()">Refresh</button><br>
+<select id="reiId">
+</select>
+<button onclick = "approveRei()">Check grade/presentation</button>
+
+<table id="rtable">
+    <th>Reimbursement ID</th>
+    <th>Event ID</th>
+    <th>Employee ID</th>
+    <th>Total Amount</th>
+    <th>Pending Amount</th>
+    <th>Awarded Amount</th>
+    <th>Exceeded</th>
+    <th>Created Date</th>
+    <th>Reimbursement Status</th>
+</table>
+</body>
+<script>
+var request;
+var employee =JSON.parse(sessionStorage.getItem("e1"));
+var status;
+var reimbur;
+var resID;
+var sId;
+var emId;
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            var Reimbursement = JSON.parse(this.responseText);
+            console.log("this is: "+ Reimbursement[1]);
+            var rList;
+            var idList;
+            var x;
+            for(i =0; i< Reimbursement.length; i++ ){
+                if(Reimbursement[i].exceeded ==1){
+                    x = "Yes";
+                }else{
+                    x= "No";
+                }
+                rList +=`<tr>
+                <td>${Reimbursement[i].resimId}</td>
+                <td>${Reimbursement[i].eventId}</td>
+                <td>${Reimbursement[i].employeeId}</td>
+                <td>${Reimbursement[i].total}</td>
+                <td>${Reimbursement[i].pendingAmount}</td>
+                <td>${Reimbursement[i].awardedAmount}</td>
+                <td>${x}</td>
+                <td>${Reimbursement[i].date}</td>
+                <td>${Reimbursement[i].requestState}</td>
+                </tr>`;
+                idList +=`<option value="${Reimbursement[i].resimId}">${Reimbursement[i].resimId}</option>`
+            }
+            document.getElementById("rtable").innerHTML += rList;
+            document.getElementById("reiId").innerHTML +=idList;
+        }        
+    }       
+    xhttp.open("GET","http://localhost:8080/TRMS/getAllReimbursement.do", true);
+    xhttp.send();
+
+function getResById(){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            reimbur = JSON.parse(this.responseText);
+            status =reimbur.requestState;
+            console.log()
+            resID = reimbur.resimId;
+            emId = reimbur.employeeId;
+            console.log("this is status inside getres function" + resID);
+            console.log("this is status inside getres function" + status);
+            console.log("this is status inside getres function employeeId" + emId);
+            sessionStorage.setItem("rei", JSON.stringify(reimbur));
+        }
+    }
+    let id = document.getElementById("reiId").value;
+    xhttp.open("GET","http://localhost:8080/TRMS/getReimbursementById.do?id="+id,true);
+    xhttp.send();
+}
+
+function updateRei(){
+
+    var result=reimbur.requestState;
+    let id =resID;
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+        }
+    }
+    let url="http://localhost:8080/TRMS/updateReimbursement.do";
+    xhttp.open("POST",url,true);
+    xhttp.setRequestHeader('Context-Type','application/json');
+
+    let updateR = {
+        resimId: id,
+        requestState: result
+    };
+    xhhtp.send(JSON.stringify(updateR));    
+}
+
+function updateEmployeeBalance(){
+
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState==4&& this.status ==200){
+            console.log(this.responseText);
+        }
+    }
+
+    let url ="http://localhost:8080/TRMS/updateEmployeeBalance.do";
+    xhttp.open("POST",url,true);
+    xhttp.setRequestHeader('Context-Type','application/json');
+    let newAwarded = reimbur.awardedAmount + reimbur.pendingAmount;
+    let total =reimbur.totalAmount;
+    let avail = total - newAwarded;
+    if(avail < 0){
+        availd = 0;
+    }
+    let balanceInfo= {
+        employeeId: reimbur.employeeId,
+        totalAmount: total,
+        awardedAmount: newAwarded,
+        availAmount: avail
+    };
+    xhttp.send(JSON.stringify(balanceInfo));
+}
+
+
+function refresh(){
+    location.reload();
+}
+
+function approveRei(){
+
+       // getResById();
+    let xhttp1 = new XMLHttpRequest();
+    var emId1
+    xhttp1.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            reimbur = JSON.parse(this.responseText);
+            status =reimbur.requestState;
+            resID = reimbur.resimId;
+            emId1 = reimbur.employeeId;
+            console.log("this is status inside getres function" + resID);
+            console.log("this is status inside getres function" + status);
+            console.log("this is status inside getres function employeeId" + emId);
+            sessionStorage.setItem("rei", JSON.stringify(reimbur));
+        }
+    }
+    let id = document.getElementById("reiId").value;
+    xhttp1.open("GET","http://localhost:8080/TRMS/getReimbursementById.do?id="+id,true);
+    xhttp1.send();
+    // getResById();
+
+    console.log(emId);
+
+    //getRequest();
+    let xhttp3 = new XMLHttpRequest();
+    xhttp3.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            request= JSON.parse(this.responseText);
+        }
+    }
+    let id1 = document.getElementById("reiId").value;
+    console.log("before assign: "+document.getElementById("reiId").value)
+    console.log("after assigned: " +id1);
+    xhttp3.open("GET","http://localhost:8080/TRMS/getRequest.do?requestId="+id1,true);
+    xhttp3.send();
+    //getRequest();
+
+
+
+    let temp;
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            temp = JSON.parse(this.responseText);
+            sId =temp.supId;
+        }
+    }
+    xhttp.open("GET","http://localhost:8080/TRMS/getEmployee.do?employeeId="
+                +emId1,true);
+    xhttp.send();
+
+
+    console.log(status);
+    if(status=="finalStage"){
+        if(employee.employeeId == sId && request.gradeFormat =="Presentation"){ 
+        // window.open("approval.html",'popup','width=500, height=200, scrollbars=no,resizable=no',false);
+            let win1 = comfirm("Did employee submit the presentation yet?");
+            if(win1 ==true){
+                let win2 = confirm("Are you satisfied with this presentation?")
+                if(win2 ==ture){
+                    comfirm("This reimbursement has been approved.");
+                    reimbur.requestState="Approved";
+                    updateEmployeeBalance();
+                }else{
+                    comfirm("This reimbursement has been denied.");
+                    reimbur.requestState="Denied";
+                }
+                updateRei();
+            }else{
+                comfirm("waiting for employee to submit presentation");
+            }
+        }else if(employee.titleId==4){
+            window.open("approval1.html",'popup','width=500, height=550, scrollbars=no,resizable=no',false);
+        }
+    }else{
+        alert("this reimbursement is not in final stage yet, \nplease check back later. ");
+    }   
+}
+
+
+function getRequest(){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status ==200){
+            console.log(this.responseText);
+            request= JSON.parse(this.responseText);
+        }
+    }
+    let id = document.getElementById("reiId").value;
+    console.log("before assign: "+document.getElementById("reiId").value)
+    console.log("after assigned: " +id);
+    xhttp.open("GET","http://localhost:8080/TRMS/getRequest.do?requestId="+id,true);
+    xhttp.send();
+    //return requets;
+}
+
+</script>
+</html>
